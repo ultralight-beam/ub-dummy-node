@@ -2,7 +2,8 @@ const noble = require('@abandonware/noble');
 
 const UB_SSID = '00756c74-7261-6c69-6768-74206265616d';
 const ECHO_SERVICE_UUID = UB_SSID;
-const ECHO_CHARACTERISTIC_UUID = 'ec0e';
+const WHISPER_UUID = '00000000-0000-0000-0000-000000000001';
+const ECHO_CHARACTERISTIC_UUID = WHISPER_UUID;
 
 noble.on('stateChange', state => {
   if (state === 'poweredOn') {
