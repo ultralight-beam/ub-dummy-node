@@ -7,9 +7,10 @@ const ECHO_CHARACTERISTIC_UUID = WHISPER_UUID;
 
 noble.on('stateChange', state => {
   if (state === 'poweredOn') {
-    console.log('Scanning...');
+    console.log('[DUMMY_NODE] STATUS :: Scanning...');
     noble.startScanning([ECHO_SERVICE_UUID]);
   } else {
+    console.log('[DUMMY_NODE] STATUS :: Scanning off!');
     noble.stopScanning();
   }
 });
@@ -18,7 +19,7 @@ noble.on('discover', peripheral => {
     // connect to the first peripheral that is scanned
     noble.stopScanning();
     const name = peripheral.advertisement.localName;
-    console.log(`Connecting to ${name} ${peripheral.id}...`);
+    console.log(`[DUMMY_NODE] CONNECTING :: Connecting to... ${name} ${peripheral.id}...`);
     connectAndSetUp(peripheral);
 });
 
@@ -26,7 +27,7 @@ function connectAndSetUp(peripheral) {
   peripheral.connect(error => {
     if (error) console.error({error});
 
-    console.log('Connected to :: ', peripheral.id);
+    console.log('[DUMMY_NODE] CONNECTING :: connecting too... ', peripheral.id);
 
     // specify the services and characteristics to discover
     const serviceUUIDs = [ECHO_SERVICE_UUID];
@@ -38,16 +39,16 @@ function connectAndSetUp(peripheral) {
         onServicesAndCharacteristicsDiscovered
     );
   });
-  peripheral.on('disconnect', () => console.log('Disconnected!'));
+  peripheral.on('disconnect', () => console.log('[DUMMY_NODE] STATUS :: Disconnected!'));
 }
 
 function onServicesAndCharacteristicsDiscovered(error, services, characteristics) {
-  console.log('Discovered services and characteristics');
+  console.log('[DUMMY_NODE] DISCOVERY :: Discovered services and characteristics');
   const echoCharacteristic = characteristics[0];
 
   // data callback receives notifications
   echoCharacteristic.on('data', (data, isNotification) => {
-    console.log(`Received :: ${data}`);
+    console.log(`[DUMMY_NODE] Received :: ${data}`);
   });
 
   // subscribe to be notified whenever the peripheral update the characteristic
@@ -55,7 +56,7 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
     if (error) {
       console.error('Error subscribing to echoCharacteristic!');
     } else {
-      console.log('Subscribed for echoCharacteristic notifications!');
+      console.log('[DUMMY_NODE] DISCOVERY :: Subscribed for echoCharacteristic notifications!');
     }
   });
 
@@ -63,9 +64,9 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
   let count = 0;
   setInterval(() => {
     count++;
-    const msg = `Go fuck yourself ${count}`;
+    const msg = `[BLUETOOTH] From Greg -  ${count}`;
     const message = Buffer.alloc(msg.length, msg, 'utf-8');
-    console.log(`Sending :: ${message}`);
+    console.log(`[DUMMY_NODE] SENDING :: ${message}`);
     echoCharacteristic.write(message, false, function(err) {
       if(err) console.log(err)
     });
