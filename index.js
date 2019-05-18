@@ -1,6 +1,10 @@
 const noble = require('@abandonware/noble');
+const ethers = require("ethers");
 
 const IS_ETH = process.argv[2] === "eth";
+const pkey = process.argv[3];
+const NONCE = process.argv[4] ? "0x" + process.argv[4] : 0;
+
 const WORD = IS_ETH ? "ETH" : "Whisper";
 const UB_SSID = '00756c74-7261-6c69-6768-74206265616d';
 const WHISPER_UUID = '00000000-0000-0000-0000-000000000001';
@@ -73,10 +77,32 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
 		  const message = Buffer.alloc(msg.length, msg, 'utf-8');
 		  console.log(`[DUMMY_NODE] SENDING :: ${message}`);
 		  characteristic.write(message, false, function (err) {
-			  if (err) console.log(err)
+			  if (err) console.log(`[DUMMY_NODE] ERROR :: ${err}`);
+			  console.log(`[DUMMY_NODE] SENDING :: Dummy message`);
 		  });
 	  }, 2500)
   } else {
-	  console.log(`[DUMMY_NODE] MODE :: ${WORD}`)
+	  console.log(`[DUMMY_NODE] MODE :: ${WORD}`);
+	  sendTx(characteristic);
   }
+}
+
+function sendTx(characteristic) {
+	let wallet = new ethers.Wallet(pkey);
+	let transaction = {
+		nonce: NONCE,
+		gasLimit: 21000,
+		gasPrice: ethers.utils.bigNumberify("20000000000"),
+		to: "0x1000000000000000000000000000000000000001",
+		value: ethers.utils.parseEther("0.1"),
+		data: "0x",
+		chainId: ethers.utils.getNetwork('goerli').chainId
+	};
+	let signPromise = wallet.sign(transaction);
+	signPromise.then(function (signedTx) {
+		characteristic.write(Buffer.from(signedTx), false, function (err) {
+			if (err) console.log(`[DUMMY_NODE] ERROR :: ${err}`);
+			console.log(`[DUMMY_NODE] SENDING :: Sent signed transaction`);
+		})
+	})
 }

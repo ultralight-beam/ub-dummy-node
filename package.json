@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@abandonware/noble": "^1.9.2-2",
+    "ethers": "^4.0.27",
     "ws": "^7.0.0"
   }
 }
