@@ -1,8 +1,11 @@
 const noble = require('@abandonware/noble');
 
+const IS_ETH = process.argv[2] === "eth";
+const WORD = IS_ETH ? "ETH" : "Whisper";
 const UB_SSID = '00756c74-7261-6c69-6768-74206265616d';
-const ECHO_SERVICE_UUID = UB_SSID;
 const WHISPER_UUID = '00000000-0000-0000-0000-000000000001';
+const ETH_CHARACTERISTIC_UUID = '00000000-0000-0000-0000-000000000002';
+const ECHO_SERVICE_UUID = UB_SSID;
 const ECHO_CHARACTERISTIC_UUID = WHISPER_UUID;
 
 noble.on('stateChange', state => {
@@ -31,7 +34,7 @@ function connectAndSetUp(peripheral) {
 
     // specify the services and characteristics to discover
     const serviceUUIDs = [ECHO_SERVICE_UUID];
-    const characteristicUUIDs = [ECHO_CHARACTERISTIC_UUID];
+    const characteristicUUIDs = IS_ETH ? [ETH_CHARACTERISTIC_UUID] : [ECHO_CHARACTERISTIC_UUID];
 
     peripheral.discoverSomeServicesAndCharacteristics(
         serviceUUIDs,
@@ -44,31 +47,36 @@ function connectAndSetUp(peripheral) {
 
 function onServicesAndCharacteristicsDiscovered(error, services, characteristics) {
   console.log('[DUMMY_NODE] DISCOVERY :: Discovered services and characteristics');
-  const echoCharacteristic = characteristics[0];
+  const characteristic = characteristics[0];
 
   // data callback receives notifications
-  echoCharacteristic.on('data', (data, isNotification) => {
+	characteristic.on('data', (data, isNotification) => {
     console.log(`[DUMMY_NODE] Received :: ${data}`);
   });
 
   // subscribe to be notified whenever the peripheral update the characteristic
-  echoCharacteristic.subscribe(error => {
+	characteristic.subscribe(error => {
     if (error) {
-      console.error('Error subscribing to echoCharacteristic!');
+      console.error(`Error subscribing to ${WORD}Characteristic!`);
     } else {
-      console.log('[DUMMY_NODE] DISCOVERY :: Subscribed for echoCharacteristic notifications!');
+      console.log(`[DUMMY_NODE] DISCOVERY :: Subscribed for ${WORD}Characteristic notifications!`);
     }
   });
 
   // create an interval to send data to the service
   let count = 0;
-  setInterval(() => {
-    count++;
-    const msg = `[BLUETOOTH] From Greg -  ${count}`;
-    const message = Buffer.alloc(msg.length, msg, 'utf-8');
-    console.log(`[DUMMY_NODE] SENDING :: ${message}`);
-    echoCharacteristic.write(message, false, function(err) {
-      if(err) console.log(err)
-    });
-  }, 2500);
+  if(!IS_ETH) {
+	  console.log("[DUMMY_NODE] MODE :: CENTRAL");
+	  setInterval(() => {
+		  count++;
+		  const msg = `[BLUETOOTH] From Greg -  ${count}`;
+		  const message = Buffer.alloc(msg.length, msg, 'utf-8');
+		  console.log(`[DUMMY_NODE] SENDING :: ${message}`);
+		  characteristic.write(message, false, function (err) {
+			  if (err) console.log(err)
+		  });
+	  }, 2500)
+  } else {
+	  console.log(`[DUMMY_NODE] MODE :: ${WORD}`)
+  }
 }
