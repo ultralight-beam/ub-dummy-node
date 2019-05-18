@@ -1,4 +1,4 @@
-# Dummy Node
+# UB Dummy Node
 
 The dummy node acts as a `central`, broadcasting messages to connected bluetooth devices. It will send periodic messages to the bluetooth device.
 
