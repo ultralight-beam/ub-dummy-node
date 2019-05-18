@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@abandonware/noble": "^1.9.2-2"
+    "@abandonware/noble": "^1.9.2-2",
+    "ws": "^7.0.0"
   }
 }
