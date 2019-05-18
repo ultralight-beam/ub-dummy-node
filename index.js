@@ -62,7 +62,8 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
   let count = 0;
   setInterval(() => {
     count++;
-    const message = new Buffer('Go fuck yourself ' + count, 'utf-8');
+    const msg = `Go fuck yourself ${count}`;
+    const message = Buffer.alloc(msg.length, msg, 'utf-8');
     console.log(`Sending :: ${message}`);
     echoCharacteristic.write(message, false, function(err) {
       if(err) console.log(err)
