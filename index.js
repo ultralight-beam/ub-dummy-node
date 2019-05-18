@@ -7,7 +7,7 @@
 
 const noble = require('@abandonware/noble');
 
-const UB_SSID = 'c3fcb7cb-aed4-4a5a-9565-ca4cbb76b0ff' 
+const UB_SSID = 'c3fcb7cb-aed4-4a5a-9565-ca4cbb76b0ff'
 const ECHO_SERVICE_UUID = UB_SSID;
 const ECHO_CHARACTERISTIC_UUID = 'ec0e';
 
@@ -43,7 +43,7 @@ function connectAndSetUp(peripheral) {
         onServicesAndCharacteristicsDiscovered
     );
   });
-  
+
   peripheral.on('disconnect', () => console.log('disconnected'));
 }
 
@@ -55,7 +55,7 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
   echoCharacteristic.on('data', (data, isNotification) => {
     console.log('Received: "' + data + '"');
   });
-  
+
   // subscribe to be notified whenever the peripheral update the characteristic
   echoCharacteristic.subscribe(error => {
     if (error) {
@@ -69,8 +69,10 @@ function onServicesAndCharacteristicsDiscovered(error, services, characteristics
   let count = 0;
   setInterval(() => {
     count++;
-    const message = new Buffer('hello, ble ' + count, 'utf-8');
+    const message = new Buffer('Go fuck yourself ' + count, 'utf-8');
     console.log("Sending:  '" + message + "'");
-    echoCharacteristic.write(message);
+    echoCharacteristic.write(message, false, function(err) {
+      if(err) console.log(err)
+    });
   }, 2500);
 }
