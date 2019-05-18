@@ -1,0 +1,9 @@
+{
+  "name": "ub-dummy-node",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "noble": "^1.9.1"
+  }
+}
