@@ -5,7 +5,7 @@
 // subscribe to be notified when the value changes
 // start an interval to write data to the characteristic
 
-const noble = require('noble');
+const noble = require('@abandonware/noble');
 
 const UB_SSID = 'c3fcb7cb-aed4-4a5a-9565-ca4cbb76b0ff' 
 const ECHO_SERVICE_UUID = UB_SSID;
